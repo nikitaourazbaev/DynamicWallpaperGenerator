@@ -10,8 +10,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ContentView: View {
-    private let generator = CombinedImageGenerator()
-
     @State private var lightImage: NSImage?
     @State private var darkImage: NSImage?
 
@@ -89,7 +87,7 @@ struct ContentView: View {
                     defer { isGenerating = false }
 
                     do {
-                        let data = try await generator.generate(
+                        let data = try await CombinedImageGenerator.generate(
                             lightImage: lightImage,
                             darkImage: darkImage
                         )

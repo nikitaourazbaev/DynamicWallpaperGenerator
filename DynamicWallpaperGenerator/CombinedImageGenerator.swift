@@ -92,7 +92,7 @@ struct CombinedImageGenerator {
         return mutableMetadata
     }
 
-    func generate(lightImage: NSImage, darkImage: NSImage) async throws -> Data
+    static func generate(lightImage: NSImage, darkImage: NSImage) async throws -> Data
     {
         guard let lightCGImage = lightImage.defaultCGImage() else {
             throw GeneratorError.couldNotCreateLightImage
@@ -102,14 +102,14 @@ struct CombinedImageGenerator {
             throw GeneratorError.couldNotCreateDarkImage
         }
 
-        return try await encode(
+        return try await Self.encode(
             lightCGImage: lightCGImage,
             darkCGImage: darkCGImage
         )
     }
 
     @concurrent
-    private nonisolated func encode(lightCGImage: CGImage, darkCGImage: CGImage)
+    private nonisolated static func encode(lightCGImage: CGImage, darkCGImage: CGImage)
         async throws -> Data
     {
         let metadata = try Self.metadata.get()
