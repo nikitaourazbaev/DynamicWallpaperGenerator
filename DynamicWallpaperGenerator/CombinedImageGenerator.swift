@@ -40,6 +40,11 @@ enum GeneratorError: LocalizedError {
 }
 
 struct CombinedImageGenerator {
+    // (unsafe) because CGImageMetadata isn’t Sendable
+    private nonisolated(unsafe) static let metadata = Result {
+        try createMetadata()
+    }
+
     private nonisolated static func createMetadata() throws -> CGImageMetadata {
         let ns = "http://ns.apple.com/namespace/1.0" as CFString
 
@@ -107,7 +112,7 @@ struct CombinedImageGenerator {
     private nonisolated func encode(lightCGImage: CGImage, darkCGImage: CGImage)
         async throws -> Data
     {
-        let metadata = try Self.createMetadata()
+        let metadata = try Self.metadata.get()
 
         let resultData = NSMutableData()
 
