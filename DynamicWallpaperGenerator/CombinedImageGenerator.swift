@@ -12,12 +12,35 @@ import CoreTransferable
 import ImageIO
 import UniformTypeIdentifiers
 
-enum GeneratorError: Error {
-    case failed(message: String)
+enum GeneratorError: LocalizedError {
+    case couldNotCreateLightImage
+    case couldNotCreateDarkImage
+    case couldNotCreateMetadataTag
+    case couldNotRegisterMetadataTagNamespace
+    case couldNotSaveTagInMetadata
+    case couldNotCreateDestination
+    case couldNotEncodeDestinationImage
+
+    var errorDescription: String? {
+        switch self {
+        case .couldNotCreateLightImage:
+            "Could not read the light image."
+        case .couldNotCreateDarkImage:
+            "Could not read the dark image."
+        case .couldNotCreateMetadataTag,
+            .couldNotRegisterMetadataTagNamespace,
+            .couldNotSaveTagInMetadata:
+            "Could not create appearance metadata."
+        case .couldNotCreateDestination:
+            "Could not create the destination."
+        case .couldNotEncodeDestinationImage:
+            "Could not encode the output image."
+        }
+    }
 }
 
 struct CombinedImageGenerator {
-    nonisolated func createMetadata() -> CGMutableImageMetadata? {
+    private nonisolated static func createMetadata() throws -> CGImageMetadata {
         let ns = "http://ns.apple.com/namespace/1.0" as CFString
 
         // {"l": 0, "d": 1} as a base64-encoded binary plist
@@ -34,8 +57,7 @@ struct CombinedImageGenerator {
             )
 
         else {
-            print("createMetadata: Couldn’t create tag")
-            return nil
+            throw GeneratorError.couldNotCreateMetadataTag
         }
 
         let mutableMetadata = CGImageMetadataCreateMutable()
@@ -48,8 +70,7 @@ struct CombinedImageGenerator {
         )
 
         if didRegisterNSPrefix == false {
-            print("createMetadata: Could not register namespace prefix")
-            return nil
+            throw GeneratorError.couldNotRegisterMetadataTagNamespace
         }
 
         let didSaveTagInMetadata = CGImageMetadataSetTagWithPath(
@@ -60,26 +81,20 @@ struct CombinedImageGenerator {
         )
 
         if didSaveTagInMetadata == false {
-            print("createMetadata: Could not save tag in metadata")
-            return nil
+            throw GeneratorError.couldNotSaveTagInMetadata
         }
 
         return mutableMetadata
     }
 
-    func generate(lightImage: NSImage, darkImage: NSImage) async throws -> Data?
+    func generate(lightImage: NSImage, darkImage: NSImage) async throws -> Data
     {
         guard let lightCGImage = lightImage.defaultCGImage() else {
-            throw GeneratorError.failed(
-                message: "Could not generate light CGImage"
-            )
-
+            throw GeneratorError.couldNotCreateLightImage
         }
 
         guard let darkCGImage = darkImage.defaultCGImage() else {
-            throw GeneratorError.failed(
-                message: "Could not generate dark CGImage"
-            )
+            throw GeneratorError.couldNotCreateDarkImage
         }
 
         return try await encode(
@@ -90,13 +105,9 @@ struct CombinedImageGenerator {
 
     @concurrent
     private nonisolated func encode(lightCGImage: CGImage, darkCGImage: CGImage)
-        async throws -> Data?
+        async throws -> Data
     {
-        guard let metadata = createMetadata() else {
-            throw GeneratorError.failed(
-                message: "Could not create appearance metadata"
-            )
-        }
+        let metadata = try Self.createMetadata()
 
         let resultData = NSMutableData()
 
@@ -108,7 +119,7 @@ struct CombinedImageGenerator {
         )
 
         guard let destination else {
-            throw GeneratorError.failed(message: "Could not create destination")
+            throw GeneratorError.couldNotCreateDestination
         }
 
         // Full quality HEIC
@@ -128,9 +139,7 @@ struct CombinedImageGenerator {
         CGImageDestinationAddImage(destination, darkCGImage, imageProperties)
 
         if CGImageDestinationFinalize(destination) == false {
-            throw GeneratorError.failed(
-                message: "Could not encode combined image"
-            )
+            throw GeneratorError.couldNotEncodeDestinationImage
         }
 
         return resultData as Data

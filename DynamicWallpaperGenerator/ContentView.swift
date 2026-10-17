@@ -20,8 +20,8 @@ struct ContentView: View {
 
     @State private var isGenerating = false
 
-    @State private var showingErrorAlert: Bool
-    @State private var errorMessage: String
+    @State private var showingErrorAlert = false
+    @State private var errorMessage = ""
 
     var imageDimensionsAreValid: Bool {
         if let lightImage, let darkImage,
@@ -89,20 +89,19 @@ struct ContentView: View {
                     defer { isGenerating = false }
 
                     do {
-                        if let data = try await generator.generate(
+                        let data = try await generator.generate(
                             lightImage: lightImage,
                             darkImage: darkImage
-                        ) {
-                            generatedWallpaper = DynamicWallpaper(data: data)
+                        )
+                        generatedWallpaper = DynamicWallpaper(data: data)
 
-                            isExporting = true
-                        }
-                    } catch GeneratorError.failed(let message) {
-                        showingErrorAlert = true
-                        errorMessage = message
+                        isExporting = true
                     } catch {
-                        showingErrorAlert = true
-                        errorMessage = error.localizedDescription
+                        showErrorAlert(
+                            error,
+                            appErrorDescription:
+                                "Could not generate the output image."
+                        )
                     }
                 }
             } label: {
@@ -137,12 +136,40 @@ struct ContentView: View {
             defaultFilename: "Dynamic Wallpaper"
         ) { result in
             if case .failure(let error) = result {
-                print("Could not save wallpaper: \(error)")
+                Task {
+                    do {
+                        try await Task.sleep(for: .seconds(1))
+                    } catch {}
+
+                    showErrorAlert(
+                        error,
+                        appErrorDescription: "Could not save the output image."
+                    )
+                }
             }
             generatedWallpaper = nil
         } onCancellation: {
             generatedWallpaper = nil
         }
+    }
+
+    private func showErrorAlert(_ error: any Error, appErrorDescription: String)
+    {
+        // Ignore cancellation
+        if error is CancellationError
+            || (error as? CocoaError)?.code == .userCancelled
+        {
+            return
+        }
+
+        if let error = error as? GeneratorError {
+            errorMessage = error.localizedDescription
+        } else {
+            errorMessage =
+                "\(appErrorDescription) \(error.localizedDescription)"
+        }
+
+        showingErrorAlert = true
     }
 }
 
