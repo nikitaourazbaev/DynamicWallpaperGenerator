@@ -11,6 +11,9 @@ import SwiftUI
     var body: some Scene {
         Window("Dynamic Wallpaper Generator", id: "main") {
             ContentView()
+                .frame(minWidth: 736, minHeight: 418)
         }
+        .defaultSize(width: 736, height: 418)
+        .windowResizability(.contentSize)
     }
 }
