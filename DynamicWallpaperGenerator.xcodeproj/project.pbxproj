@@ -8,11 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		118B16D4308283300087D16A /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 118B16D33082832D0087D16A /* .gitignore */; };
+		11D1771F3083BDA600D1E619 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 11D1771E3083BDA300D1E619 /* README.md */; };
+		11D177213083BDAC00D1E619 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = 11D177203083BDA900D1E619 /* LICENSE.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* Dynamic Wallpaper Generator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dynamic Wallpaper Generator.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		118B16D33082832D0087D16A /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		11D1771E3083BDA300D1E619 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		11D177203083BDA900D1E619 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,6 +39,8 @@
 		000000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
+				11D177203083BDA900D1E619 /* LICENSE.md */,
+				11D1771E3083BDA300D1E619 /* README.md */,
 				118B16D33082832D0087D16A /* .gitignore */,
 				000000000000000000000010 /* DynamicWallpaperGenerator */,
 				000000000000000000000020 /* Products */,
@@ -108,7 +114,9 @@
 		000000000000000140000000 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				11D177213083BDAC00D1E619 /* LICENSE.md in Resources */,
 				118B16D4308283300087D16A /* .gitignore in Resources */,
+				11D1771F3083BDA600D1E619 /* README.md in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */
