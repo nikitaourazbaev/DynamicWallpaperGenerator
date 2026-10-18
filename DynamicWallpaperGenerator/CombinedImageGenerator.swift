@@ -8,7 +8,6 @@
 /// Based on https://remove.codes/01-dynamic-wallpaper
 
 import AppKit
-import CoreTransferable
 import ImageIO
 import UniformTypeIdentifiers
 
@@ -102,14 +101,14 @@ struct CombinedImageGenerator {
             throw GeneratorError.couldNotCreateDarkImage
         }
 
-        return try await Self.encode(
+        return try await Self.createOutputImage(
             lightCGImage: lightCGImage,
             darkCGImage: darkCGImage
         )
     }
 
     @concurrent
-    private nonisolated static func encode(
+    private nonisolated static func createOutputImage(
         lightCGImage: CGImage,
         darkCGImage: CGImage
     )

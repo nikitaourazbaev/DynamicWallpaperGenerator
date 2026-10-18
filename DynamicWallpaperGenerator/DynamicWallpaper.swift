@@ -5,10 +5,10 @@
 //  Created by Nikita Ourazbaev on 2026-10-16.
 //
 
-import SwiftUI
+import CoreTransferable
 import UniformTypeIdentifiers
 
-/// Encoded dynamic wallpaper data that can be exported as a HEIC file.
+/// Encoded dynamic wallpaper data that can be exported as an HEIC file.
 struct DynamicWallpaper: Transferable {
     let data: Data
 

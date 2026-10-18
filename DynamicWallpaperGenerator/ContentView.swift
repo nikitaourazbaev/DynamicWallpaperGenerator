@@ -13,10 +13,11 @@ struct ContentView: View {
     @State private var lightImage: NSImage?
     @State private var darkImage: NSImage?
 
-    @State private var generatedWallpaper: DynamicWallpaper?
-    @State private var isExporting = false
+    @State private var outputImage: DynamicWallpaper?
 
     @State private var isGenerating = false
+
+    @State private var showingFileExport = false
 
     @State private var showingErrorAlert = false
     @State private var errorMessage = ""
@@ -91,9 +92,9 @@ struct ContentView: View {
                             lightImage: lightImage,
                             darkImage: darkImage
                         )
-                        generatedWallpaper = DynamicWallpaper(data: data)
+                        outputImage = DynamicWallpaper(data: data)
 
-                        isExporting = true
+                        showingFileExport = true
                     } catch {
                         showErrorAlert(
                             error,
@@ -119,7 +120,7 @@ struct ContentView: View {
             .disabled(
                 lightImage == nil || darkImage == nil
                     || imageDimensionsAreValid == false || isGenerating
-                    || isExporting
+                    || showingFileExport
             )
         }
         .padding()
@@ -128,8 +129,8 @@ struct ContentView: View {
             Text(errorMessage)
         }
         .fileExporter(
-            isPresented: $isExporting,
-            item: generatedWallpaper,
+            isPresented: $showingFileExport,
+            item: outputImage,
             contentTypes: [.heic],
             defaultFilename: "Dynamic Wallpaper"
         ) { result in
@@ -145,9 +146,9 @@ struct ContentView: View {
                     )
                 }
             }
-            generatedWallpaper = nil
+            outputImage = nil
         } onCancellation: {
-            generatedWallpaper = nil
+            outputImage = nil
         }
     }
 
