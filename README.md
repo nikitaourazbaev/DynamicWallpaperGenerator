@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="readme-assets/icon-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="readme-assets/icon-light.png">
-  <img alt="App icon" src="readme-assets/icon-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="readme-assets/icon-dark@2x.png">
+  <source media="(prefers-color-scheme: light)" srcset="readme-assets/icon-light@2x.png">
+  <img width="64" alt="App icon" src="readme-assets/icon-light@2x.png">
 </picture>
 
 # DynamicWallpaperGenerator
