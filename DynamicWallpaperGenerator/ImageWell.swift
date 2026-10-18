@@ -23,8 +23,17 @@ struct ImageWell: NSViewRepresentable {
         }
     }
 
+    /// Does not accept focus if window is invisible (workaround for inconsistent focus behaviour across relaunches).
+    class CustomImageView: NSImageView {
+        override func becomeFirstResponder() -> Bool {
+            guard window?.isVisible == true else { return false }
+
+            return super.becomeFirstResponder()
+        }
+    }
+
     func makeNSView(context: Context) -> NSImageView {
-        let view = NSImageView()
+        let view = CustomImageView()
 
         view.isEditable = true
         view.allowsCutCopyPaste = true
